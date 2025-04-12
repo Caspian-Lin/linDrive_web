@@ -1,23 +1,25 @@
 // src/components/Breadcrumb.tsx
-import { Link, Typography } from '@mui/material';
+import { Link, Typography,TableCell } from '@mui/material';
 import React from 'react';
-
-export default function Breadcrumb({ path }: { path: string }) {
+// 定义 Props 接口
+interface BreadcrumbProps {
+  path: string;
+  onDirClick: (path: string) => void;
+}
+export default function Breadcrumb({ path, onDirClick }: BreadcrumbProps) {
+    // 分割目录
   const segments = path.split('/').filter(Boolean);
-
+  const getBreadcrumbPath = (index: number) => {
+    return '/' + segments.slice(0, index + 1).join('/');
+  };
   return (
-    <div style={{ padding: '1rem' }}>
-      <Link href="#" onClick={() => window.location.reload()} color="inherit">
-        根目录
-      </Link>
+    <>
       {segments.map((seg, index) => (
-        <span key={index}>
-          {' / '}
-          <Link href="#" onClick={() => {/* 跳转逻辑 */}}>
+        <a onClick = {() => onDirClick(getBreadcrumbPath(index))}>
+          {'/'}
             {seg}
-          </Link>
-        </span>
+        </a>
       ))}
-    </div>
+    </>
   );
 }
