@@ -1,13 +1,14 @@
 import * as React from 'react';
 import { DataGrid } from '@mui/x-data-grid';
-import {useFetchFiles, FileTableheader,  FileTableRows } from '../dataPreparation/FilesData';
-
+import {FileTableheader,  FileTableRows } from '../dataPreparation/FilesData';
+import { useFileContext } from '../contexts/FileContext';
 export default function CustomizedDataGrid() {
+  const { currentFilesPath, setCurrentFilesPath } = useFileContext();
   const rows = FileTableRows(); // 调用 FileTableRows 函数并传入文件数据
 
   return (
+    
     <DataGrid
-      checkboxSelection
       rows={rows}
       columns={ FileTableheader}
       getRowClassName={(params) =>
@@ -17,7 +18,15 @@ export default function CustomizedDataGrid() {
         pagination: { paginationModel: { pageSize: 20 } },
       }}
       pageSizeOptions={[10, 20, 50]}
-      disableColumnResize
+      checkboxSelection
+      disableRowSelectionOnClick
+      onRowDoubleClick={(params) => {
+      if (params.row.isDir) {
+        setCurrentFilesPath(currentFilesPath+"/"+params.row.name.name);
+      }else if (isImg(params.row.name.name)) {
+        console.log('isImg:',params.row.name.name);
+      }}}
+      // disableColumnResize 
       density="compact"
       slotProps={{
         filterPanel: {
@@ -47,4 +56,13 @@ export default function CustomizedDataGrid() {
       }}
     />
   );
+}
+
+
+const isImg = (filename:string)=>{
+    
+  const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'];
+  const extension=filename.split('.').pop()?.toLowerCase()
+  console.log('Check isImg:',imageExtensions.includes(extension!));
+  return imageExtensions.includes(extension!); // TODO 暂时断言一下后缀存在
 }

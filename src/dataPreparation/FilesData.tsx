@@ -27,15 +27,14 @@ export const useFetchFiles = () => {
     const [files, setFiles] = React.useState<FileInfo[]>([]);
     const [loading, setLoading] = React.useState<boolean>(false);
     const [error, setError] = React.useState<string | null>(null);
-    const [path, setPath] = React.useState<string>("");
-
+    const { currentFilesPath, setCurrentFilesPath } = useFileContext();
     // 修复 1：将 fetchFiles 改为 async 函数
     const fetchFiles = React.useCallback(async () => {
         setLoading(true);
         setError(null);
         try {
             const res = await axios.get(
-                `http://115.159.31.68:8010/api/files?path=${encodeURIComponent(path)}`
+                `http://115.159.31.68:8010/api/files?path=${encodeURIComponent(currentFilesPath)}`
             );
             setFiles(res.data.data);
         } catch (err) {
@@ -44,7 +43,7 @@ export const useFetchFiles = () => {
         } finally {
             setLoading(false);
         }
-    }, [path]); // 依赖项添加 path
+    }, [currentFilesPath]); // 依赖项添加 path
 
     // 修复 2：解注并修正 useEffect
     React.useEffect(() => {
@@ -57,18 +56,9 @@ export const useFetchFiles = () => {
         fetchFiles, 
         loading, 
         error, 
-        path, 
-        setPath 
+        currentFilesPath
     };
 };
-
-  const isImg = (filename:string)=>{
-    
-    const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'];
-    const extension=filename.split('.').pop()?.toLowerCase()
-    console.log('Check isImg:',imageExtensions.includes(extension!));
-    return imageExtensions.includes(extension!); // TODO 暂时断言一下后缀存在
-  }
 
   // TODO: 处理列表点击 要放到别的模组去
   // const [previewOpen, setPreviewOpen] = React.useState(false);
@@ -164,22 +154,39 @@ function renderFileTypeIcon(status: boolean) {
 }
 
 export const FileTableheader: GridColDef[] = [
-  { field: 'name', headerName: '名称', flex: 1.5, minWidth: 200 },
+
+  { field: 'name', headerName: '名称', flex: 1.5, minWidth: 200,
+    renderCell: (params) => (<div style={{
+      display: 'flex',
+      alignItems: 'center',
+      gap: 8,
+      height: '100%',
+      padding: '0 12px',
+    }}>
+      {/* 动态渲染文件类型图标 */}
+      {renderFileTypeIcon(params.value.isDir as any)}
+      <span>
+        {params.value.name}
+      </span>
+    </div>), 
+  },
   {
     field: 'status', 
     headerName: '状态',
     flex: 0.5,
-    minWidth: 80,
+    width: 80,
     renderCell: (params) => renderStatus(params.value as any), //暂时保留 未来有用
   },
   {
     field: 'isDir',
     headerName: '类型',
-    // headerAlign: 'right',
-    // align: 'right',
+    headerAlign: 'left',
+    align: 'left',
+    resizable: false,
     flex: 1,
-    minWidth: 80,
-    renderCell: (params) => renderFileTypeIcon(params.value as any), //暂时保留 未来有用
+    width: 1,
+    renderCell: (params) => {
+      return params.value ? '文件夹' : '文件';} 
   },
   {
     field: 'size',
@@ -187,7 +194,9 @@ export const FileTableheader: GridColDef[] = [
     headerAlign: 'right',
     align: 'right',
     flex: 1,
-    minWidth: 100,
+    width: 100,
+    renderCell: (params) => {
+      return params.value.isDir ? "" : (params.value.size/ 1024).toFixed(2)+'KB';} 
   },
   {
     field: 'modTime',
@@ -195,14 +204,14 @@ export const FileTableheader: GridColDef[] = [
     headerAlign: 'right',
     align: 'right',
     flex: 1,
-    minWidth: 120,
+    width: 120,
   },
 ];
 
 
 export const FileTableRows = function():GridRowsProp{
   // 正确使用useState的位置 [[7]][[9]]
-  const {files, loading,error,path,setPath} = useFetchFiles();
+  const {files, loading,error,currentFilesPath} = useFetchFiles();
   // const [files, setFiles] = React.useState<FileInfo[]>([]);
   console.log('FileTableRows:',files);
   // 使用useMemo转换数据并添加id字段 [[3]][[6]]
@@ -210,9 +219,9 @@ export const FileTableRows = function():GridRowsProp{
       files.map((file, index) => ({
         id: index, 
         status: 'Online',
-        name: file.name,
+        name: {name:file.name,isDir:file.isDir},
         isDir: file.isDir,
-        size: file.size,
+        size: {size:file.size,isDir:file.isDir},
         modTime: file.modTime,
       }));
   // 返回表格数据（需配合表格组件使用）

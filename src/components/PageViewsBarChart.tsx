@@ -1,3 +1,4 @@
+
 import * as React from 'react';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -10,9 +11,9 @@ import { useTheme } from '@mui/material/styles';
 export default function PageViewsBarChart() {
   const theme = useTheme();
   const colorPalette = [
-    theme.palette.primary.dark,
-    theme.palette.primary.main,
-    theme.palette.primary.light,
+    theme.vars.palette.primary.dark,
+    theme.vars.palette.primary.main,
+    theme.vars.palette.primary.light,
   ];
   return (
     <Card variant="outlined" sx={{ width: '100%' }}>

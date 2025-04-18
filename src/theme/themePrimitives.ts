@@ -18,6 +18,18 @@ declare module '@mui/material/styles' {
     800: string;
     900: string;
   }
+  // interface PaletteOptions {
+  //   gradient: string;
+  //   border: {
+  //     subtle: string;
+  //   };
+  // }
+  // interface Palette {
+  //   gradient: string;
+  //   border: {
+  //     subtle: string;
+  //   };
+  // }
 
   interface PaletteColor extends ColorRange {}
 

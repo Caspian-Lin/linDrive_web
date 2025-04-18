@@ -8,6 +8,15 @@ import { navigationCustomizations } from './customizations/navigation';
 import { surfacesCustomizations } from './customizations/surfaces';
 import { colorSchemes, typography, shadows, shape } from './themePrimitives';
 
+// The import can be in any file that is included in your `tsconfig.json`
+
+// import { styled } from '@mui/material/styles';
+
+// const StyledComponent = styled('button')(({ theme }) => ({
+//   // ✅ typed-safe
+//   color: theme.vars.palette.primary.main,
+// }));
+
 interface AppThemeProps {
   children: React.ReactNode;
   /**
