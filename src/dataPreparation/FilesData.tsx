@@ -10,7 +10,6 @@ import {
 import FolderIcon from '@mui/icons-material/Folder';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 
-// import Breadcrumb from './Breadcrumb';
 // import ImagePreview from './ImagePreview';
 import { useFileContext } from '../contexts/FileContext';
 
@@ -22,6 +21,9 @@ interface FileInfo {
   modTime: string;
   path: string;
 }
+
+const apiUrl = process.env.REACT_APP_API_URL;
+
 // 自定义 Hook 用于获取文件列表
 export const useFetchFiles = () => {
     const [files, setFiles] = React.useState<FileInfo[]>([]);
@@ -34,7 +36,8 @@ export const useFetchFiles = () => {
         setError(null);
         try {
             const res = await axios.get(
-                `http://115.159.31.68:8010/api/files?path=${encodeURIComponent(currentFilesPath)}`
+                // `http://115.159.31.68:8010/api/files?path=${encodeURIComponent(currentFilesPath)}`
+                `http://${apiUrl}/api/files?path=${encodeURIComponent(currentFilesPath)}`
             );
             setFiles(res.data.data);
         } catch (err) {

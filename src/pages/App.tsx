@@ -26,6 +26,7 @@ import {
   datePickersCustomizations,
   treeViewCustomizations,
 } from '../theme/customizations';
+import { ViewTypeProvider } from '../contexts/ViewTypeContect';
 
 
 const xThemeComponents = {
@@ -39,6 +40,7 @@ function App(props: { disableCustomTheme?: boolean }) {
   return (
   <AppTheme {...props} themeComponents={xThemeComponents}>
     <CssBaseline enableColorScheme />
+    <ViewTypeProvider>
     <FileProvider>
     <Box sx={{ display: 'flex' }}>
       <SideMenu />
@@ -69,6 +71,7 @@ function App(props: { disableCustomTheme?: boolean }) {
       </Box>
     </Box>
     </FileProvider>
+    </ViewTypeProvider>
   </AppTheme>
   
 
